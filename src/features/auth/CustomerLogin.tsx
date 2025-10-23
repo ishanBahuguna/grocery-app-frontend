@@ -13,7 +13,9 @@ import CustomText from '@components/CustomText';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { resetAndNavigate } from '@utils/NavigationUtils';
 import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight';
-import LinearGradient from 'react-native-linear-gradient'
+import LinearGradient from 'react-native-linear-gradient';
+import CustomInput from '@components/ui/CustomInput';
+import CustomButtom from '@components/ui/CustomButtom';
 
 const bottomColors = [...lightColors].reverse(); // lightColors --> white to black
 
@@ -24,21 +26,21 @@ const CustomerLogin = () => {
   const animatedValue = useRef(new Animated.Value(0)).current;
   const keyboardOffsetHeight = useKeyboardOffsetHeight();
 
-  useEffect(( ) => {
-    if(keyboardOffsetHeight === 0) {
-        Animated.timing(animatedValue , {
-            toValue:0,
-            duration:500,
-            useNativeDriver:true
-        }).start()
+  useEffect(() => {
+    if (keyboardOffsetHeight === 0) {
+      Animated.timing(animatedValue, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
     } else {
-        Animated.timing(animatedValue , {
-            toValue: -keyboardOffsetHeight * 0.84,
-            duration:1000,
-            useNativeDriver:true
-        }).start()
+      Animated.timing(animatedValue, {
+        toValue: -keyboardOffsetHeight * 0.84,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
     }
-  } , [])
+  }, [keyboardOffsetHeight]);
 
   const handleGesture = ({ nativeEvent }: any) => {
     if (nativeEvent.state === State.END) {
@@ -59,6 +61,10 @@ const CustomerLogin = () => {
     }
   };
 
+  const handleAuth = async () => {
+
+  }
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.container}>
@@ -67,18 +73,42 @@ const CustomerLogin = () => {
 
           <PanGestureHandler onHandlerStateChange={handleGesture}>
             <Animated.ScrollView
+            style={{transform:[{translateY:animatedValue}]}}
               bounces={false}
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.subContainer}
             >
-                <LinearGradient colors={bottomColors} style={styles.gradient}/>
-                <View style={styles.content}>
-                    <Image source={require('@assets/images/logo.jpeg')} style={styles.logo}/>
-                    <CustomText variant='h2' fontFamily={Fonts.Bold}>Grocery Delivery App</CustomText>
-                    <CustomText variant='h5' fontFamily={Fonts.SemiBold} style={styles.text}>Log in or signup</CustomText>
-                </View>
+              <LinearGradient colors={bottomColors} style={styles.gradient} />
+              <View style={styles.content}>
+                <Image
+                  source={require('@assets/images/logo.jpeg')}
+                  style={styles.logo}
+                />
+                <CustomText variant="h2" fontFamily={Fonts.Bold}>
+                  Grocery Delivery App
+                </CustomText>
+                <CustomText
+                  variant="h5"
+                  fontFamily={Fonts.SemiBold}
+                  style={styles.text}
+                >
+                  Log in or signup
+                </CustomText>
 
+                <CustomInput
+                  onChangeText={text => setPhoneNumber(text.slice(0, 10))}
+                  onClear={() => setPhoneNumber('')}
+                  value={phoneNumber}
+                  placeholder='Enter mobile number'
+                  inputMode='numeric'
+                  left={
+                    <CustomText style={styles.phoneText} variant='h6' fontFamily={Fonts.SemiBold}>+91</CustomText>
+                  }
+                />
+
+                <CustomButtom disabled={phoneNumber?.length != 10} onPress={handleAuth} loading={loading} title='Continue'/>
+              </View>
             </Animated.ScrollView>
           </PanGestureHandler>
         </CustomerSafeAreaView>
@@ -101,6 +131,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  phoneText:{
+    marginLeft:10
+  },
   subContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -120,29 +153,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fc',
     width: '100%',
   },
-  gradient:{
-    paddingTop:60,
-    width:"100%"
+  gradient: {
+    paddingTop: 60,
+    width: '100%',
   },
-  content:{
-    justifyContent:'center',
-    alignItems:'center',
-    width:"100%",
-    backgroundColor:'white',
-    paddingHorizontal:20,
-    paddingBottom:40
+  content: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingBottom: 80,
   },
-  logo:{
-    height:50,
-    width:50,
-    borderRadius:20,
-    marginVertical:10
+  logo: {
+    height: 50,
+    width: 50,
+    borderRadius: 20,
+    marginVertical: 10,
   },
-  text:{
-    marginTop:2,
-    marginBottom:25,
-    opacity:0.8
-  }
+  text: {
+    marginTop: 2,
+    marginBottom: 25,
+    opacity: 0.8,
+  },
 });
 
 export default CustomerLogin;
